@@ -11,7 +11,7 @@ services:
     container_name: ${PROJECT_NAME}_webserver 
     working_dir: ${LARAVEL_ROOT} 
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro # replace default.conf and make it read-only to prevent container write something to our original file
+      - ./docker/dev/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro # replace default.conf and make it read-only to prevent container write something to our original file
       - ./application:${LARAVEL_ROOT} 
     ports:
       - "${WEB_SERVER_PORT}:80" 
@@ -22,7 +22,7 @@ services:
 
   laravel-php-fpm:
     build: 
-      context: php-fpm # specify in which directory to look for Dockerfile, directory is relative to the location of this docker-compose.yml file
+      context: ./docker/dev/php-fpm # specify in which directory to look for Dockerfile, directory is relative to the location of this docker-compose.yml file
       dockerfile: Dockerfile
     container_name: ${PROJECT_NAME}_php-fpm 
     working_dir: ${LARAVEL_ROOT} 
@@ -70,7 +70,7 @@ services:
 
   artisan:
     build: 
-        context: php-fpm # specify in which directory to look for Dockerfile, directory is relative to the location of this docker-compose.yml file
+        context: ./docker/dev/php-fpm # specify in which directory to look for Dockerfile, directory is relative to the location of this docker-compose.yml file
         dockerfile: Dockerfile
     container_name: ${PROJECT_NAME}_artisan 
     working_dir: ${LARAVEL_ROOT} 
