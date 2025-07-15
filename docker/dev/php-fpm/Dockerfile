@@ -6,7 +6,7 @@ RUN apk add --no-cache \
     libpng-dev libjpeg-turbo-dev libwebp-dev libxpm-dev freetype-dev \
     oniguruma-dev icu-dev libxml2-dev zip unzip git curl bash \
     && docker-php-ext-install \
-        pdo pdo_mysql mbstring intl xml gd opcache \
+    pdo pdo_mysql mbstring intl xml gd opcache \
     && docker-php-source delete 
 
 # create a non-root user and group to run the application for security reasons and matching file permissions and ownership for mounted host volumes
