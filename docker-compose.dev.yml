@@ -6,6 +6,31 @@
 #    specifying this in volumes of our servers we make the same local files available in each container
 # 4. It's important to keep user as user: "1000:1000" everywhere to match the user and group of the files in our system that we mount to the containers to prevent permission issues
 
+# define shared config with aliases and anchors
+# this allows us to reuse the same configuration in multiple services
+# for example, we can use <<: *defaults to inherit the shared config
+x-defaults: &defaults
+  working_dir: ${LARAVEL_ROOT:-/application}
+  user: "1000:1000"
+  volumes:
+    - ./application:${LARAVEL_ROOT:-/application}
+
+x-php-fpm: &php-fpm
+  <<: *defaults
+  build:
+    context: ./docker/dev/php-fpm # specify in which directory to look for Dockerfile, directory is relative to the location of this docker-compose.yml file
+    dockerfile: Dockerfile
+  depends_on:
+    - laravel-mysql
+
+x-base-php-env: &base-php-env
+  DB_CONNECTION: mysql
+  DB_HOST: laravel-mysql # the same as the service name of the mysql container, this is how we connect to the database
+  DB_DATABASE: ${DB_DATABASE:-laravel_db}
+  DB_USERNAME: ${DB_USER:-laravel_db_user}
+  DB_PASSWORD: ${DB_PASSWORD:-1234}
+
+#main services for laravel application
 services:
   laravel-webserver:
     image: nginx:stable-alpine # get a stable lightweight version of nginx
@@ -21,26 +46,14 @@ services:
       - laravel-php-fpm
 
   laravel-php-fpm:
-    build:
-      context: ./docker/dev/php-fpm # specify in which directory to look for Dockerfile, directory is relative to the location of this docker-compose.yml file
-      dockerfile: Dockerfile
+    <<: *php-fpm
     container_name: ${PROJECT_NAME:-laravel-test}_php-fpm
-    working_dir: ${LARAVEL_ROOT:-/application}
-    user: "1000:1000"
     environment:
+      <<: *base-php-env
       APP_ENV: local
       APP_DEBUG: true
       APP_NAME: ${PROJECT_NAME:-laravel-test}
-      DB_CONNECTION: mysql
-      DB_HOST: laravel-mysql # the same as the service name of the mysql container, this is how we connect to the database
-      DB_DATABASE: ${DB_DATABASE:-laravel_db}
-      DB_USERNAME: ${DB_USER:-laravel_db_user}
-      DB_PASSWORD: ${DB_PASSWORD:-1234}
-    volumes:
-      - ./application:${LARAVEL_ROOT:-/application}
     restart: unless-stopped
-    depends_on:
-      - laravel-mysql
 
   laravel-mysql:
     image: mysql:8.0
@@ -57,33 +70,18 @@ services:
     restart: unless-stopped
 
   composer:
+    <<: *defaults
     image: composer:2
     container_name: ${PROJECT_NAME:-laravel-test}_composer
-    working_dir: ${LARAVEL_ROOT:-/application}
-    user: "1000:1000"
-    volumes:
-      - ./application:${LARAVEL_ROOT:-/application}
     entrypoint: [ "composer", "--ignore-platform-reqs" ]
 
   artisan:
-    build:
-      context: ./docker/dev/php-fpm # specify in which directory to look for Dockerfile, directory is relative to the location of this docker-compose.yml file
-      dockerfile: Dockerfile
-    container_name: ${PROJECT_NAME:-laravel-test}_artisan
-    working_dir: ${LARAVEL_ROOT:-/application}
-    user: "1000:1000"
+    <<: *php-fpm
     environment:
-      DB_CONNECTION: mysql
-      DB_HOST: laravel-mysql # the same as the service name of the mysql container, this is how we connect to the database
-      DB_DATABASE: ${DB_DATABASE:-laravel_db}
-      DB_USERNAME: ${DB_USER:-laravel_db_user}
-      DB_PASSWORD: ${DB_PASSWORD:-1234}
-    volumes:
-      - ./application:${LARAVEL_ROOT:-/application}
+      <<: *base-php-env
+    container_name: ${PROJECT_NAME:-laravel-test}_artisan
     entrypoint: [ "php", "artisan" ] # when we run "docker compose run --rm artisan" we don't need to write "php artisan" after to execute commands, we can run command like this "docker compose run --rm artisan migrate" right away
     command: [ "--version" ] # override the default command specified in Dockerfile
-    depends_on:
-      - laravel-mysql
 
 volumes:
   # named volume for mysql data that is necessary to create to use it in mysql service
