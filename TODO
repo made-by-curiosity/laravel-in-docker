@@ -1,0 +1,13 @@
+# TODO: https://nickjanetakis.com/blog/best-practices-around-production-ready-web-apps-with-docker-compose
+# + add defaults for variables from .env file in docker-compose.yml
+# - make default variables in docker-compose.yml production first
+# - shared config with aliases and anchors via x-app: &some-name
+# - .overrides file for dev
+# - update gitignore for overrides file
+# - adding healthcheck to services in docker-compose
+# - move restart policy to a variable, so in production we can set it to unless-stopped and in dev to no
+# - make a healthcheck route for laravel app where we ping redis, next we try to execute db query and only then return 200 OK
+# - add changing ownership while copying files in Dockerfile
+# - use pull_policy: build to always build the image from Dockerfile for all services that have a Dockerfile
+# - use in depends_on condition: service_healthy to wait for the service to be healthy before starting the dependent service
+# - add redis service
