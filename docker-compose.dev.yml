@@ -20,6 +20,7 @@ x-php-fpm: &php-fpm
   build:
     context: ./docker/dev/php-fpm # specify in which directory to look for Dockerfile, directory is relative to the location of this docker-compose.yml file
     dockerfile: Dockerfile
+  pull_policy: build # always build the image from Dockerfile
   depends_on:
     - laravel-mysql
 
