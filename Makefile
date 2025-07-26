@@ -1,41 +1,37 @@
 # Makefile for managing Laravel Docker setup
 
-# To use with prod: type commands like `make up ENV=prod`
-ENV ?= dev
-COMPOSE_FILE = docker-compose.$(ENV).yml
-
 # 🐳 Docker Compose Commands
 
 fresh-build:
-	docker compose -f $(COMPOSE_FILE) build --no-cache
+	docker compose build --no-cache
 
 up:
-	docker compose -f $(COMPOSE_FILE) up -d --build
+	docker compose up -d --build
 
 down:
-	docker compose -f $(COMPOSE_FILE) down
+	docker compose down
 
 compose:
-	docker compose -f $(COMPOSE_FILE) $(cmd)
+	docker compose $(cmd)
 
 # 🧰 Laravel Artisan
 
 artisan:
-	docker compose -f $(COMPOSE_FILE) run --rm artisan $(cmd)
+	docker compose run --rm artisan $(cmd)
 
 migrate:
-	docker compose -f $(COMPOSE_FILE) run --rm artisan migrate
+	docker compose run --rm artisan migrate
 
 generate-key:
-	docker compose -f $(COMPOSE_FILE) run --rm artisan key:generate
+	docker compose run --rm artisan key:generate
 
 # 📦 Composer
 
 composer:
-	docker compose -f $(COMPOSE_FILE) run --rm composer $(cmd)
+	docker compose run --rm composer $(cmd)
 
 composer-install:
-	docker compose -f $(COMPOSE_FILE) run --rm composer install
+	docker compose run --rm composer install
 
 # Fresh start
 
@@ -75,7 +71,7 @@ prepare-new-project:
 	fi
 
 create-project:
-	docker compose -f $(COMPOSE_FILE) run --rm composer create-project laravel/laravel .
+	docker compose run --rm composer create-project laravel/laravel .
 
 # restart containers after creating a new project to apply changes
 new-project: prepare-new-project create-project
@@ -83,4 +79,4 @@ new-project: prepare-new-project create-project
 # info
 
 show-config:
-	docker compose -f $(COMPOSE_FILE) config
+	docker compose config
