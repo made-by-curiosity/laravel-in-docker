@@ -79,3 +79,8 @@ create-project:
 
 # restart containers after creating a new project to apply changes
 new-project: prepare-new-project create-project
+
+# info
+
+show-config:
+	docker compose -f $(COMPOSE_FILE) config

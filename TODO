@@ -5,7 +5,7 @@
 # - .overrides file for dev
 # - update gitignore for overrides file
 # - adding healthcheck to services in docker-compose
-# - move restart policy to a variable, so in production we can set it to unless-stopped and in dev to no
+# + move restart policy to a variable, so in production we can set it to unless-stopped and in dev to no
 # - make a healthcheck route for laravel app where we ping redis, next we try to execute db query and only then return 200 OK
 # - add changing ownership while copying files in Dockerfile
 # - use pull_policy: build to always build the image from Dockerfile for all services that have a Dockerfile
