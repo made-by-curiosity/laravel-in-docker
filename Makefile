@@ -62,13 +62,12 @@ prepare-laravel-env:
 # which leads to permission issues when we try to access it from our user and we won't be able to create a new project inside it
 prepare-new-project:
 	@if [ -d "./application" ]; then \
-		echo "Folder exists. Updating ownership..."; \
-		sudo chown -R 1000:1000 ./application; \
-	else \
-		echo "Folder not found. Creating..."; \
-		mkdir -p ./application; \
-		sudo chown -R 1000:1000 ./application; \
-	fi
+		echo "Folder exists. Deleting..."; \
+		sudo rm -rf ./application; \
+	fi; \
+	echo "Creating new folder..."; \
+	mkdir -p ./application; \
+	sudo chown -R 1000:1000 ./application;
 
 create-project:
 	docker compose run --rm composer create-project laravel/laravel .
