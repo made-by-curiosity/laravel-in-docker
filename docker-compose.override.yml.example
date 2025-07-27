@@ -1,7 +1,28 @@
 # this file is used to override the default settings in docker-compose.yml for development purposes
 
 services:
+  laravel-webserver:
+    volumes:
+      - ./docker/dev/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+
   laravel-php-fpm:
+    build:
+      context: ./docker/dev/php-fpm
     environment:
       APP_ENV: local
       APP_DEBUG: true
+
+  artisan:
+    build:
+      context: ./docker/dev/php-fpm
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: ${PROJECT_NAME:-laravel-test}_phpmyadmin
+    ports:
+      - ${PHPMYADMIN_PORT:-8081}:80
+    environment:
+      PMA_HOST: laravel-mysql
+      PMA_USER: ${DB_USER:-laravel_db_user}
+      PMA_PASSWORD: ${DB_PASSWORD:-1234}
+      UPLOAD_LIMIT: 64M
