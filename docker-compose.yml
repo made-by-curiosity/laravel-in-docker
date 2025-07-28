@@ -54,6 +54,7 @@ services:
       APP_ENV: production
       APP_DEBUG: false
       APP_NAME: ${PROJECT_NAME:-laravel-test}
+      TELESCOPE_ENABLED: ${TELESCOPE_ENABLED:-false}
     restart: ${DOCKER_RESTART_POLICY:-unless-stopped}
 
   laravel-mysql:
