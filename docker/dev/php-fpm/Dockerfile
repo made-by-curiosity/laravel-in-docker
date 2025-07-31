@@ -9,9 +9,12 @@ RUN apk add --no-cache \
     pdo pdo_mysql mbstring intl xml gd opcache \
     && docker-php-source delete 
 
+ARG UID=1000
+ARG GID=1000
+
 # create a non-root user and group to run the application for security reasons and matching file permissions and ownership for mounted host volumes
 # important! we wanna install everything as root, but run the application as a non-root user, so we create a user and a group and switch to it after installing everything
-RUN addgroup -g 1000 appgroup && adduser -u 1000 -G appgroup -s /bin/sh -D appuser
+RUN addgroup -g ${GID} appgroup && adduser -u ${UID} -G appgroup -s /bin/sh -D appuser
 USER appuser
 
 CMD ["php-fpm"]

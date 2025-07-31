@@ -37,12 +37,19 @@ composer-install:
 
 init: prepare-env fresh-build
 
+# To avoid issues with permissions we need to add UID and GID to the .env file, different servers may have different users, so this way we dynamically set them
 prepare-env:
 	@if [ ! -f .env ]; then \
 		cp .env.example .env && \
-		echo ".env created"; \
+		echo "UID=$$(id -u)" >> .env && \
+		echo "GID=$$(id -g)" >> .env && \
+		echo ".env created with UID and GID"; \
 	else \
 		echo ".env already exists"; \
+		echo "" >> .env && \
+		grep -q '^UID=' .env || echo "UID=$$(id -u)" >> .env; \
+		grep -q '^GID=' .env || echo "GID=$$(id -g)" >> .env; \
+		echo "UID/GID appended if missing"; \
 	fi
 
 laravel-init: prepare-laravel-env composer-install generate-key migrate
