@@ -83,7 +83,7 @@ new-project: prepare-new-project create-project
 
 # Fresh start ---------------------------------------
 
-init: prepare-env fresh-build
+init: prepare-env prepare-override fresh-build
 
 laravel-init: prepare-laravel-env composer-install generate-key migrate cache
 
@@ -100,6 +100,18 @@ prepare-env:
 		grep -q '^UID=' .env || echo "UID=$$(id -u)" >> .env; \
 		grep -q '^GID=' .env || echo "GID=$$(id -g)" >> .env; \
 		echo "UID/GID appended if missing"; \
+	fi
+
+prepare-override:
+	@if [ "$(MODE)" = "dev" ]; then \
+		if [ ! -f docker-compose.override.yml ]; then \
+			cp docker-compose.override.yml.example docker-compose.override.yml && \
+			echo "docker-compose.override.yml created"; \
+		else \
+			echo "docker-compose.override.yml already exists"; \
+		fi \
+	else \
+		echo "Skipping override file setup in prod mode"; \
 	fi
 
 prepare-laravel-env:
