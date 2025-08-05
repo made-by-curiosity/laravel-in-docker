@@ -1,3 +1,10 @@
+# By default, the Makefile will run in production mode.
+# To run in development mode, set the MODE variable to 'dev' when running make commands
+# Example: make laravel-init MODE=dev
+# Or change next line to MODE ?= dev to apply dev mode for all commands
+
+MODE ?= prod
+
 # 🐳 Docker Compose Commands
 
 up:
@@ -18,7 +25,22 @@ artisan:
 	docker compose run --rm artisan $(cmd)
 
 migrate:
-	docker compose run --rm artisan migrate
+	@echo "Running migrations..."
+	@if [ "$(MODE)" = "prod" ]; then \
+		docker compose run --rm artisan migrate --force; \
+	else \
+		docker compose run --rm artisan migrate; \
+	fi
+
+cache:
+	@if [ "$(MODE)" = "prod" ]; then \
+		echo "Caching config, routes, and views..."; \
+		docker compose run --rm artisan config:cache; \
+		docker compose run --rm artisan route:cache; \
+		docker compose run --rm artisan view:cache; \
+	else \
+		echo "Skipping cache commands in dev mode"; \
+	fi
 
 generate-key:
 	docker compose run --rm artisan key:generate
@@ -29,7 +51,12 @@ composer:
 	docker compose run --rm composer $(cmd)
 
 composer-install:
-	docker compose run --rm composer install
+	@echo "Installing composer dependencies..."
+	@if [ "$(MODE)" = "prod" ]; then \
+		docker compose run --rm composer install --no-dev --optimize-autoloader; \
+	else \
+		docker compose run --rm composer install; \
+	fi
 
 
 # Creating new project ---------------------------------------
@@ -58,7 +85,7 @@ new-project: prepare-new-project create-project
 
 init: prepare-env fresh-build
 
-laravel-init: prepare-laravel-env composer-install generate-key migrate
+laravel-init: prepare-laravel-env composer-install generate-key migrate cache
 
 # To avoid issues with permissions we need to add UID and GID to the .env file, different servers may have different users, so this way we dynamically set them
 prepare-env:
