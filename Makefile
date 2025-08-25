@@ -34,12 +34,18 @@ migrate:
 
 cache:
 	@if [ "$(MODE)" = "prod" ]; then \
-		echo "Caching config, routes, and views..."; \
-		docker compose run --rm artisan config:cache; \
-		docker compose run --rm artisan route:cache; \
-		docker compose run --rm artisan view:cache; \
+		echo "Caching config, events, routes, and views..."; \
+		docker compose run --rm artisan optimize; \
 	else \
 		echo "Skipping cache commands in dev mode"; \
+	fi
+
+cache-clear:
+	@if [ "$(MODE)" = "prod" ]; then \
+		echo "Clearing cache..."; \
+		docker compose run --rm artisan optimize:clear; \
+	else \
+		echo "Skipping cache clear commands in dev mode"; \
 	fi
 
 generate-key:

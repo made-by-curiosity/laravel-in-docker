@@ -17,6 +17,9 @@ services:
   artisan:
     build:
       context: ./docker/dev/php-fpm
+    environment:
+      APP_ENV: local
+      APP_DEBUG: true
 
   laravel-mysql:
     ports:

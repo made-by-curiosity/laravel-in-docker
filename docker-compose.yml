@@ -33,6 +33,11 @@ x-base-php-env: &base-php-env
   DB_DATABASE: ${DB_DATABASE:-laravel_db}
   DB_USERNAME: ${DB_USER:-laravel_db_user}
   DB_PASSWORD: ${DB_PASSWORD:-1234}
+  APP_ENV: production
+  APP_DEBUG: false
+  APP_NAME: ${PROJECT_NAME:-laravel-test}
+  APP_URL: ${APP_URL:-http://localhost}
+  TELESCOPE_ENABLED: ${TELESCOPE_ENABLED:-false}
 
 #main services for laravel application
 services:
@@ -56,10 +61,6 @@ services:
     container_name: ${PROJECT_NAME:-laravel-test}_php-fpm
     environment:
       <<: *base-php-env
-      APP_ENV: production
-      APP_DEBUG: false
-      APP_NAME: ${PROJECT_NAME:-laravel-test}
-      TELESCOPE_ENABLED: ${TELESCOPE_ENABLED:-false}
     restart: ${DOCKER_RESTART_POLICY:-unless-stopped}
 
   laravel-mysql:
