@@ -35,5 +35,6 @@ services:
       PMA_USER: ${DB_USER:-laravel_db_user}
       PMA_PASSWORD: ${DB_PASSWORD:-1234}
       UPLOAD_LIMIT: 64M
+    restart: ${DOCKER_RESTART_POLICY:-unless-stopped}
 
 networks: !reset ""
