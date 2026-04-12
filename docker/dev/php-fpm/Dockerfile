@@ -15,6 +15,9 @@ ARG GID=1000
 # create a non-root user and group to run the application for security reasons and matching file permissions and ownership for mounted host volumes
 # important! we wanna install everything as root, but run the application as a non-root user, so we create a user and a group and switch to it after installing everything
 RUN addgroup -g ${GID} appgroup && adduser -u ${UID} -G appgroup -s /bin/sh -D appuser
+
+COPY ./php.ini /usr/local/etc/php/php.ini
+
 USER appuser
 
 CMD ["php-fpm"]
